@@ -1,33 +1,45 @@
-import express  from "express"
-import cors from 'cors'
-import { connectDB } from "./config/db.js"
-import userRouter from "./routes/userRoute.js"
-import foodRouter from "./routes/foodRoute.js"
-import 'dotenv/config'
-import cartRouter from "./routes/cartRoute.js"
-import orderRouter from "./routes/orderRoute.js"
+import express from "express";
+import cors from "cors";
+import { connectDB } from "./config/db.js";
+import userRouter from "./routes/userRoute.js";
+import foodRouter from "./routes/foodRoute.js";
+import cartRouter from "./routes/cartRoute.js";
+import orderRouter from "./routes/orderRoute.js";
+import 'dotenv/config';
 
-// app config
-const app = express()
-const port = process.env.PORT || 4000;
+// ✅ Load environment variables
+const PORT = process.env.PORT || 4000;
+const MONGODB_URI = process.env.MONGODB_URI;
 
+if (!MONGODB_URI) {
+  console.error("❌ ERROR: MONGODB_URI is missing in .env");
+  process.exit(1); // Exit process if MongoDB URI is not set
+}
 
-// middlewares
-app.use(express.json())
-app.use(cors())
+// ✅ Connect to the database
+connectDB();
 
-// db connection
-connectDB()
+// ✅ Initialize Express app
+const app = express();
 
-// api endpoints
-app.use("/api/user", userRouter)
-app.use("/api/food", foodRouter)
-app.use("/images",express.static('uploads'))
-app.use("/api/cart", cartRouter)
-app.use("/api/order",orderRouter)
+// ✅ Middlewares
+app.use(express.json());
+app.use(cors());
 
+// ✅ API Endpoints
+app.use("/api/user", userRouter);
+app.use("/api/food", foodRouter);
+app.use("/images", express.static("uploads"));
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
+
+// ✅ Health Check
 app.get("/", (req, res) => {
-    res.send("API Working")
-  });
+  res.send("🚀 API is working!");
+});
 
-app.listen(port, () => console.log(`Server started on http://localhost:${port}`))
+// ✅ Start Server
+app.listen(PORT, () => {
+  console.log(`✅ Server started at: http://localhost:${PORT}`);
+});
+
