@@ -1,18 +1,23 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import path from "path"; // Ensure correct .env path
+import path from "path";
 import { fileURLToPath } from "url";
 
-// Fix for ES module-based projects
+// Resolve __dirname for ES modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-// Debug: Log all environment variables
-console.log("🔍 Process.env: ", process.env);
+// Load environment variables
+const envFound = dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-// Explicitly log `MONGODB_URI`
-console.log("🔍 MongoDB URI from process.env:", process.env.MONGODB_URI);
+if (envFound.error) {
+  console.error("❌ ERROR: Failed to load .env file");
+  process.exit(1);
+}
 
+// Debug: Log only MongoDB URI to avoid exposing all env variables
+console.log("🔍 MongoDB URI from process.env:", process.env.MONGODB_URI || "❌ Not Found");
+
+// Validate MONGODB_URI
 const MONGO_URI = process.env.MONGODB_URI;
 if (!MONGO_URI) {
   console.error("❌ ERROR: MONGODB_URI is missing in .env");
@@ -21,10 +26,7 @@ if (!MONGO_URI) {
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGO_URI);
     console.log("✅ DB Connected Successfully");
   } catch (error) {
     console.error("❌ DB Connection Error:", error);
