@@ -1,15 +1,16 @@
 import dotenv from "dotenv";
-dotenv.config(); // Load .env variables FIRST
+dotenv.config(); // Load .env variables
 
 import mongoose from "mongoose";
 
 // Debugging: Check if MONGO_URI is loaded
 console.log("🔍 MongoDB URI from .env:", process.env.MONGO_URI);
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI; // Ensure this matches Render
+
 if (!MONGO_URI) {
-  console.error("❌ MongoDB connection string (MONGO_URI) is missing!");
-  process.exit(1); // Stop execution if URI is missing
+  console.error("❌ ERROR: MONGO_URI is missing in .env");
+  process.exit(1);
 }
 
 export const connectDB = async () => {
