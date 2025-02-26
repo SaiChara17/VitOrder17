@@ -1,15 +1,21 @@
-import dotenv from "dotenv";
-dotenv.config(); // Load .env variables
-
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+import path from "path"; // Ensure correct .env path
+import { fileURLToPath } from "url";
 
-// Debugging: Check if MONGO_URI is loaded
-console.log("🔍 MongoDB URI from .env:", process.env.MONGO_URI);
+// Fix for ES module-based projects
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-const MONGO_URI = process.env.MONGO_URI; // Ensure this matches Render
+// Debug: Log all environment variables
+console.log("🔍 Process.env: ", process.env);
 
+// Explicitly log `MONGODB_URI`
+console.log("🔍 MongoDB URI from process.env:", process.env.MONGODB_URI);
+
+const MONGO_URI = process.env.MONGODB_URI;
 if (!MONGO_URI) {
-  console.error("❌ ERROR: MONGO_URI is missing in .env");
+  console.error("❌ ERROR: MONGODB_URI is missing in .env");
   process.exit(1);
 }
 
