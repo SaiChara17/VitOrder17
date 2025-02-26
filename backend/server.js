@@ -1,17 +1,33 @@
-import jwt from 'jsonwebtoken';
+import express  from "express"
+import cors from 'cors'
+import { connectDB } from "./config/db.js"
+import userRouter from "./routes/userRoute.js"
+import foodRouter from "./routes/foodRoute.js"
+import 'dotenv/config'
+import cartRouter from "./routes/cartRoute.js"
+import orderRouter from "./routes/orderRoute.js"
 
-const authMiddleware = async (req, res, next) => {
-    const { token } = req.headers;
-    if (!token) {
-        return res.json({success:false,message:'Not Authorized Login Again'});
-    }
-    try {
-        const token_decode =  jwt.verify(token, process.env.JWT_SECRET);
-        req.body.userId = token_decode.id;
-        next();
-    } catch (error) {
-        return res.json({success:false,message:error.message});
-    }
-}
+// app config
+const app = express()
+const port = process.env.PORT || 4000;
 
-export default authMiddleware;
+
+// middlewares
+app.use(express.json())
+app.use(cors())
+
+// db connection
+connectDB()
+
+// api endpoints
+app.use("/api/user", userRouter)
+app.use("/api/food", foodRouter)
+app.use("/images",express.static('uploads'))
+app.use("/api/cart", cartRouter)
+app.use("/api/order",orderRouter)
+
+app.get("/", (req, res) => {
+    res.send("API Working")
+  });
+
+app.listen(port, () => console.log(`Server started on http://localhost:${port}`))
